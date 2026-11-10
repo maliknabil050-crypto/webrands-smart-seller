@@ -32,7 +32,7 @@
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden; /* لمنع أي سكرول في الشاشة الرئيسية */
+      overflow: hidden;
       background-color: var(--bg-dark);
       color: var(--text-main);
       user-select: none;
@@ -43,9 +43,8 @@
       flex-direction: column;
     }
 
-    /* الترويسة العلوية */
     header {
-      padding: 0.8rem 1.2rem;
+      padding: 0.6rem 1.2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -56,14 +55,17 @@
       flex-shrink: 0;
     }
 
-    .brand-title {
-      font-size: 1.25rem;
-      font-weight: 900;
-      letter-spacing: 2px;
-      color: var(--accent-gold);
+    .brand-logo-wrap {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.5rem;
+    }
+
+    .brand-logo-img {
+      height: 38px;
+      width: auto;
+      object-fit: contain;
+      border-radius: 50%;
     }
 
     .radar-indicator {
@@ -118,7 +120,6 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* شاشة الاستقبال والكونسيرج - أبعاد مضغوطة لتناسب كامل الشاشة */
     #stage-concierge {
       flex-direction: column;
       align-items: center;
@@ -264,7 +265,6 @@
       color: var(--text-muted);
     }
 
-    /* شبكة الأقسام الأربعة 2x2 لتناسب الشاشة بدون سكرول */
     .categories-grid-main {
       width: 100%;
       max-width: 400px;
@@ -321,7 +321,6 @@
       transition: all 0.3s;
     }
 
-    /* صالة العرض مع إمكانية التمرير بداخلها فقط */
     #stage-showroom {
       flex-direction: column;
       padding: 1.2rem;
@@ -510,7 +509,6 @@
       font-size: 0.9rem;
     }
 
-    /* شاشة التوديع */
     #stage-farewell {
       flex-direction: column;
       align-items: center;
@@ -553,7 +551,9 @@
 <body onclick="handleGlobalTouch()">
 
   <header>
-    <div class="brand-title">WE BRANDS</div>
+    <div class="brand-logo-wrap">
+      <img src="logo.png" alt="WE BRANDS" class="brand-logo-img">
+    </div>
     <div class="radar-indicator">
       <div id="radar-status-dot" class="pulse-dot"></div>
       <span id="radar-status-text">بانتظار الإذن...</span>
@@ -580,7 +580,7 @@
         <span class="mic-label" id="mic-status-label">انقر وتحدث بصوتك أو اختر من الأسفل</span>
       </div>
 
-      <!-- شبكة الأقسام الأربعة 2x2 ظاهرة فوراً دون سكرول -->
+      <!-- الأقسام الأربعة بشبكة 2x2 بدون سكرول -->
       <div class="categories-grid-main" id="categories-grid">
         <button class="opt-chip" onclick="handleCategorySelect('riyadh', event)">سلسلة اكتشف الرياض (المصمك)</button>
         <button class="opt-chip" onclick="handleCategorySelect('nfc_cards', event)">حلول وبطاقات NFC الذكية</button>

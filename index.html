@@ -6,7 +6,7 @@
   <title>WE BRANDS | البائع الذكي والرادار التفاعلي</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
   
   <style>
     :root {
@@ -58,14 +58,24 @@
     .brand-logo-wrap {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.75rem;
     }
 
     .brand-logo-img {
-      height: 38px;
-      width: auto;
-      object-fit: contain;
+      height: 48px;
+      width: 48px;
+      object-fit: cover;
       border-radius: 50%;
+      box-shadow: 0 0 14px rgba(255, 255, 255, 0.15);
+    }
+
+    .brand-name-en {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      color: #ffffff;
+      text-transform: uppercase;
     }
 
     .radar-indicator {
@@ -100,7 +110,7 @@
       display: flex;
       flex-direction: column;
       position: relative;
-      height: calc(100vh - 55px);
+      height: calc(100vh - 60px);
     }
 
     .view-stage {
@@ -124,15 +134,15 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-evenly;
-      padding: 0.8rem 1rem 1.2rem 1rem;
+      padding: 0.6rem 1rem 1rem 1rem;
       text-align: center;
       cursor: pointer;
     }
 
     .orb-wrapper {
       position: relative;
-      width: 170px;
-      height: 170px;
+      width: 160px;
+      height: 160px;
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -167,8 +177,8 @@
     }
 
     .ai-orb {
-      width: 90px;
-      height: 90px;
+      width: 86px;
+      height: 86px;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #fff5db, var(--accent-gold) 55%, #3a280c 100%);
       box-shadow: 0 0 30px var(--accent-gold), 0 0 60px var(--accent-gold-glow);
@@ -204,9 +214,9 @@
     }
 
     .welcome-text {
-      max-width: 90%;
-      margin: 0.2rem auto;
-      font-size: 1.15rem;
+      max-width: 92%;
+      margin: 0.1rem auto;
+      font-size: 1.05rem;
       font-weight: 700;
       line-height: 1.6;
       color: var(--text-main);
@@ -271,7 +281,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.6rem;
-      margin-top: 0.4rem;
+      margin-top: 0.2rem;
       flex-shrink: 0;
     }
 
@@ -304,7 +314,7 @@
       width: 100%;
       max-width: 360px;
       flex-shrink: 0;
-      margin-top: 0.5rem;
+      margin-top: 0.4rem;
     }
 
     .custom-action-btn {
@@ -553,6 +563,7 @@
   <header>
     <div class="brand-logo-wrap">
       <img src="logo.png" alt="WE BRANDS" class="brand-logo-img">
+      <span class="brand-name-en">WE BRANDS</span>
     </div>
     <div class="radar-indicator">
       <div id="radar-status-dot" class="pulse-dot"></div>
@@ -570,7 +581,7 @@
       </div>
 
       <div class="welcome-text" id="welcome-message">
-        حيّاك الله في WE BRANDS.. اختر القسم أو تحدث بصوتك مباشرة
+        أهلاً بك في عالم WE BRANDS.. مستقبل ملابس الستريت وير التقنية. تصفّح أحدث الدروبات، ودعنا نساعدك لاختيارٍ يليق بحضورك.
       </div>
 
       <div class="mic-control-box" id="mic-box">
@@ -975,7 +986,7 @@
         categoriesGrid.style.display = 'grid';
         micBox.style.display = 'flex';
         actionWrapper.style.display = 'none';
-        welcomeMsg.innerText = "حيّاك الله في WE BRANDS.. اختر القسم أو تحدث بصوتك مباشرة";
+        welcomeMsg.innerText = "أهلاً بك في عالم WE BRANDS.. مستقبل ملابس الستريت وير التقنية. تصفّح أحدث الدروبات، ودعنا نساعدك لاختيارٍ يليق بحضورك.";
         micLabel.innerText = "انقر وتحدث بصوتك أو اختر من الأسفل";
       } else if (stageName === 'showroom') {
         document.getElementById('stage-showroom').classList.add('active');

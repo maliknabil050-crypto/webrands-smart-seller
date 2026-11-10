@@ -44,7 +44,7 @@
     }
 
     header {
-      padding: 0.6rem 1.2rem;
+      padding: 0.6rem 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -58,12 +58,12 @@
     .brand-logo-wrap {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.6rem;
     }
 
     .brand-logo-img {
-      height: 48px;
-      width: 48px;
+      height: 44px;
+      width: 44px;
       object-fit: cover;
       border-radius: 50%;
       box-shadow: 0 0 14px rgba(255, 255, 255, 0.15);
@@ -71,26 +71,45 @@
 
     .brand-name-en {
       font-family: 'Montserrat', sans-serif;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 900;
       letter-spacing: 1.5px;
       color: #ffffff;
       text-transform: uppercase;
     }
 
-    .radar-indicator {
+    .radar-controls-wrap {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      font-size: 0.75rem;
+    }
+
+    .radar-toggle-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-color);
       color: var(--text-muted);
+      padding: 0.35rem 0.65rem;
+      border-radius: 16px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.25s;
+    }
+
+    .radar-toggle-btn.active {
+      border-color: var(--success-green);
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--success-green);
     }
 
     .pulse-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #eab308;
+      background: #71717a;
       transition: background 0.3s;
     }
 
@@ -216,7 +235,7 @@
     .welcome-text {
       max-width: 92%;
       margin: 0.1rem auto;
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       font-weight: 700;
       line-height: 1.6;
       color: var(--text-main);
@@ -565,9 +584,12 @@
       <img src="logo.png" alt="WE BRANDS" class="brand-logo-img">
       <span class="brand-name-en">WE BRANDS</span>
     </div>
-    <div class="radar-indicator">
-      <div id="radar-status-dot" class="pulse-dot"></div>
-      <span id="radar-status-text">بانتظار الإذن...</span>
+    
+    <div class="radar-controls-wrap">
+      <button class="radar-toggle-btn active" id="radar-btn" onclick="toggleRadarMode(event)">
+        <span class="pulse-dot active" id="radar-status-dot"></span>
+        <span id="radar-btn-text">الرادار: يعمل</span>
+      </button>
     </div>
   </header>
 
@@ -591,12 +613,12 @@
         <span class="mic-label" id="mic-status-label">انقر وتحدث بصوتك أو اختر من الأسفل</span>
       </div>
 
-      <!-- الأقسام الأربعة بشبكة 2x2 بدون سكرول -->
+      <!-- الأقسام الأربعة المعتمدة بشبكة 2x2 بدون سكرول -->
       <div class="categories-grid-main" id="categories-grid">
-        <button class="opt-chip" onclick="handleCategorySelect('riyadh', event)">سلسلة اكتشف الرياض (المصمك)</button>
-        <button class="opt-chip" onclick="handleCategorySelect('nfc_cards', event)">حلول وبطاقات NFC الذكية</button>
-        <button class="opt-chip" onclick="handleCategorySelect('hoodies', event)">الهوديات الفاخرة</button>
-        <button class="opt-chip" onclick="handleCategorySelect('streetwear', event)">تيشيرتات ستريت وير</button>
+        <button class="opt-chip" onclick="handleCategorySelect('streetwear', event)">ستريت وير والهبات</button>
+        <button class="opt-chip" onclick="handleCategorySelect('looks', event)">تنسيقات البراند</button>
+        <button class="opt-chip" onclick="handleCategorySelect('hoodies', event)">الهوديات والقطع الثقيلة</button>
+        <button class="opt-chip" onclick="handleCategorySelect('basics', event)">البيسك والقطع اليومية</button>
       </div>
 
       <div class="action-confirm-box" id="action-wrapper"></div>
@@ -614,10 +636,10 @@
 
       <div class="categories-bar">
         <button class="cat-btn active" onclick="filterByTab('all', this)">الكل</button>
-        <button class="cat-btn" onclick="filterByTab('riyadh', this)">سلسلة اكتشف الرياض</button>
-        <button class="cat-btn" onclick="filterByTab('nfc_cards', this)">حلول وبطاقات NFC الذكية</button>
-        <button class="cat-btn" onclick="filterByTab('hoodies', this)">الهوديات الفاخرة</button>
-        <button class="cat-btn" onclick="filterByTab('streetwear', this)">تيشيرتات ستريت وير</button>
+        <button class="cat-btn" onclick="filterByTab('streetwear', this)">ستريت وير والهبات</button>
+        <button class="cat-btn" onclick="filterByTab('looks', this)">تنسيقات البراند</button>
+        <button class="cat-btn" onclick="filterByTab('hoodies', this)">الهوديات والقطع الثقيلة</button>
+        <button class="cat-btn" onclick="filterByTab('basics', this)">البيسك والقطع اليومية</button>
       </div>
 
       <div class="products-grid" id="products-list"></div>
@@ -668,54 +690,56 @@
     const catalog = [
       {
         id: 1,
-        title: "تيشيرت قصر المصمك | اكتشف الرياض",
-        category: "riyadh",
+        title: "تيشيرت أوفر سايز جرافيك | Street Drop",
+        category: "streetwear",
         price: 240,
         image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80",
-        desc: "الإصدار التراثي: قصة بوكس فيت ثقيلة، طبعة قصر المصمك، وشريحة NFC تفاعلية مدمجة بالسدو."
+        desc: "قصّة بوكس فيت واسعة، قطن فاخر 100% مع طباعة فنية مستوحاة من ثقافة أزياء الشارع."
       },
       {
         id: 2,
-        title: "بطاقة الأعمال الرقمية الذكية (Smart NFC Card)",
-        category: "nfc_cards",
-        price: 150,
-        image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
-        desc: "بطاقة معدنية فاخرة مدمجة بشريحة NFC تشارك بياناتك وروابطك بلمسة واحدة على الجوال."
+        title: "طقم كامل | WE Total Outfit",
+        category: "looks",
+        price: 490,
+        image: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&w=600&q=80",
+        desc: "تنسيق متكامل يجمع هودي وبنطال كارجو عصري متناسق في الألوان والقصّات."
       },
       {
         id: 3,
-        title: "تصريح الزوار وتجربة الفعاليات (Visitor & Event Pass)",
-        category: "nfc_cards",
-        price: 180,
-        image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=600&q=80",
-        desc: "بطاقة تفاعلية للمعارض تفتح دليلاً رقمياً وروابط ضيافة وتجارب حصرية."
-      },
-      {
-        id: 4,
-        title: "هودي WE BRANDS الفاخر (Heavyweight Hoodie)",
+        title: "هودي WE BRANDS الثقيل (Heavyweight)",
         category: "hoodies",
         price: 295,
         image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=600&q=80",
-        desc: "خامة قطن ثقيل عالي الجودة، قصة مريحة متناسقة ولمسات ستريت وير عصرية."
+        desc: "خامة قطن صوفية ثقيلة 450 GSM، ملمس ناعم وعازل مع قبعة دائرية متماسكة."
+      },
+      {
+        id: 4,
+        title: "تيشيرت بيسك سادة أسود (Essential Boxy)",
+        category: "basics",
+        price: 160,
+        image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600&q=80",
+        desc: "القطعة اليومية الأساسية: قصة مريحة متناسقة وياقة محبوكة تدوم مع الاستخدام المستمر."
       },
       {
         id: 5,
-        title: "تيشيرت أوفر سايز كلاسيك (Oversized Streetwear)",
-        category: "streetwear",
-        price: 175,
-        image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600&q=80",
-        desc: "قصة واسعة كاجوال مريحة، خامة قطنية ممتازة للاستخدام اليومي بتطريز أنيق."
+        title: "تيشيرت بيسك أبيض خام (Raw Off-White)",
+        category: "basics",
+        price: 160,
+        image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=600&q=80",
+        desc: "قطن طبيعي خفيف ومريح جداً، مثالي للتنسيقات اليومية والطبقات."
       }
     ];
 
     let cart = [];
     let audioUnlocked = false;
     let cameraActive = false;
+    let radarEnabled = true;
     let qrGenerator = null;
     let audioCtx = null;
     let recognition = null;
     let isListening = false;
     let currentAudio = null;
+    let lastWelcomeTime = 0; // مانع التكرار المزعج
 
     const orb = document.getElementById('voice-orb');
     const farewellOrb = document.getElementById('farewell-orb');
@@ -725,8 +749,25 @@
     const micBox = document.getElementById('mic-box');
     const micBtn = document.getElementById('voice-mic-btn');
     const micLabel = document.getElementById('mic-status-label');
+    const radarBtn = document.getElementById('radar-btn');
     const dot = document.getElementById('radar-status-dot');
-    const statusText = document.getElementById('radar-status-text');
+    const radarBtnText = document.getElementById('radar-btn-text');
+
+    function toggleRadarMode(e) {
+      if (e) e.stopPropagation();
+      radarEnabled = !radarEnabled;
+
+      if (radarEnabled) {
+        radarBtn.classList.add('active');
+        dot.classList.add('active');
+        radarBtnText.innerText = "الرادار: يعمل";
+        if (!cameraActive) initCameraRadar();
+      } else {
+        radarBtn.classList.remove('active');
+        dot.classList.remove('active');
+        radarBtnText.innerText = "الرادار: موقوف";
+      }
+    }
 
     function playMp3Track(filename, targetOrb) {
       if (currentAudio) {
@@ -754,8 +795,9 @@
         
         playChime();
         playMp3Track('welcome-mp3.mp3', orb);
+        lastWelcomeTime = Date.now();
 
-        if (!cameraActive) {
+        if (!cameraActive && radarEnabled) {
           initCameraRadar();
         }
       }
@@ -834,14 +876,14 @@
 
     function processVoiceInput(text) {
       playChime();
-      if (text.includes("رياض") || text.includes("مصمك") || text.includes("سدو")) {
-        handleCategorySelect('riyadh');
-      } else if (text.includes("بطاق") || text.includes("nfc") || text.includes("حلول")) {
-        handleCategorySelect('nfc_cards');
-      } else if (text.includes("هودي") || text.includes("شتوي")) {
+      if (text.includes("ستريت") || text.includes("هبات") || text.includes("هبة")) {
+        handleCategorySelect('streetwear');
+      } else if (text.includes("تنسيق") || text.includes("طقم")) {
+        handleCategorySelect('looks');
+      } else if (text.includes("هودي") || text.includes("ثقيل") || text.includes("شتوي")) {
         handleCategorySelect('hoodies');
       } else {
-        handleCategorySelect('streetwear');
+        handleCategorySelect('basics');
       }
     }
 
@@ -856,11 +898,11 @@
       welcomeMsg.innerText = "اختيار رائع وذوق مميز! جهزت لك القطع المناسبة لاختيارك.. تفضل بالدخول";
       playMp3Track('step3-ready.mp3', orb);
 
-      let btnLabel = "👉 الدخول واستعراض المعرض";
-      if (categoryKey === 'riyadh') btnLabel = "👉 الدخول لاستعراض سلسلة اكتشف الرياض";
-      if (categoryKey === 'nfc_cards') btnLabel = "👉 الدخول لاستعراض حلول وبطاقات NFC";
-      if (categoryKey === 'hoodies') btnLabel = "👉 الدخول لاستعراض الهوديات الفاخرة";
-      if (categoryKey === 'streetwear') btnLabel = "👉 الدخول لاستعراض تيشيرتات ستريت وير";
+      let btnLabel = "👉 الدخول واستعراض التشكيلة";
+      if (categoryKey === 'streetwear') btnLabel = "👉 استعراض قطع ستريت وير والهبات";
+      if (categoryKey === 'looks') btnLabel = "👉 استعراض تنسيقات البراند";
+      if (categoryKey === 'hoodies') btnLabel = "👉 استعراض الهوديات والقطع الثقيلة";
+      if (categoryKey === 'basics') btnLabel = "👉 استعراض البيسك والقطع اليومية";
 
       actionWrapper.innerHTML = `
         <button class="custom-action-btn" onclick="openShowroom('${categoryKey}', event)">${btnLabel}</button>
@@ -884,10 +926,10 @@
       const buttons = document.querySelectorAll('.cat-btn');
       buttons.forEach(b => {
         b.classList.remove('active');
-        if (categoryKey === 'riyadh' && b.innerText.includes('اكتشف الرياض')) b.classList.add('active');
-        else if (categoryKey === 'nfc_cards' && b.innerText.includes('NFC')) b.classList.add('active');
+        if (categoryKey === 'streetwear' && b.innerText.includes('ستريت')) b.classList.add('active');
+        else if (categoryKey === 'looks' && b.innerText.includes('تنسيقات')) b.classList.add('active');
         else if (categoryKey === 'hoodies' && b.innerText.includes('الهوديات')) b.classList.add('active');
-        else if (categoryKey === 'streetwear' && b.innerText.includes('ستريت')) b.classList.add('active');
+        else if (categoryKey === 'basics' && b.innerText.includes('البيسك')) b.classList.add('active');
         else if (categoryKey === 'all' && b.innerText === 'الكل') b.classList.add('active');
       });
       renderProducts(categoryKey);
@@ -1005,11 +1047,9 @@
         .then(stream => {
           video.srcObject = stream;
           cameraActive = true;
-          dot.classList.add('active');
-          statusText.innerText = "الرادار البصري يعمل (رصد الحركة نشط)";
 
           setInterval(() => {
-            if (video.readyState < 2) return;
+            if (!radarEnabled || video.readyState < 2) return;
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const currentFrame = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
@@ -1020,21 +1060,23 @@
               }
               const score = diff / (canvas.width * canvas.height);
               
-              if (score > 16) {
+              // تحسس حركة الزائر مع فاصل زمني 45 ثانية لمنع التكرار
+              if (score > 18 && (Date.now() - lastWelcomeTime > 45000)) {
+                lastWelcomeTime = Date.now();
                 if (!audioUnlocked) {
                   handleGlobalTouch();
-                } else if (currentAudio && currentAudio.paused) {
+                } else if (!currentAudio || currentAudio.paused) {
                   playMp3Track('welcome-mp3.mp3', orb);
                 }
               }
             }
             prevFrame = currentFrame;
-          }, 350);
+          }, 400);
         })
         .catch(err => {
           dot.classList.remove('active');
-          dot.style.background = '#ef4444';
-          statusText.innerText = "تم حظر إذن الكاميرا من المتصفح";
+          dot.style.background = '#71717a';
+          radarBtnText.innerText = "الكاميرا محظورة";
         });
     }
 

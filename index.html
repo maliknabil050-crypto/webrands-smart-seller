@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WE BRANDS | البائع الذكي والرادار التفاعلي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #08090b;
+      --card-bg: rgba(20, 24, 34, 0.85);
+      --border-color: rgba(197, 160, 89, 0.25);
+      --accent-gold: #c5a059;
+      --accent-gold-glow: rgba(197, 160, 89, 0.45);
+      --text-main: #f5f5f7;
+      --text-muted: #9aa0a6;
+      --success-green: #34d399;
+      --mic-red: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden; /* لمنع أي سكرول في الشاشة الرئيسية */
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      user-select: none;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* الترويسة العلوية */
+    header {
+      padding: 0.8rem 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(8, 9, 11, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .radar-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #eab308;
+      transition: background 0.3s;
+    }
+
+    .pulse-dot.active {
+      background: var(--success-green);
+      box-shadow: 0 0 10px var(--success-green);
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .stage-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: calc(100vh - 55px);
+    }
+
+    .view-stage {
+      display: none;
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .view-stage.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* شاشة الاستقبال والكونسيرج - أبعاد مضغوطة لتناسب كامل الشاشة */
+    #stage-concierge {
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-evenly;
+      padding: 0.8rem 1rem 1.2rem 1rem;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .orb-wrapper {
+      position: relative;
+      width: 170px;
+      height: 170px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .radar-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent-gold);
+      box-shadow: 0 0 20px var(--accent-gold-glow);
+      animation: radarSweep 3s infinite ease-out;
+      pointer-events: none;
+    }
+
+    .radar-ring:nth-child(2) {
+      animation-delay: 1.5s;
+    }
+
+    @keyframes radarSweep {
+      0% {
+        transform: scale(0.65);
+        opacity: 0.85;
+      }
+      100% {
+        transform: scale(1.6);
+        opacity: 0;
+      }
+    }
+
+    .ai-orb {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff5db, var(--accent-gold) 55%, #3a280c 100%);
+      box-shadow: 0 0 30px var(--accent-gold), 0 0 60px var(--accent-gold-glow);
+      transition: all 0.4s ease;
+      z-index: 2;
+      animation: idleBreathing 2.6s infinite ease-in-out alternate;
+    }
+
+    @keyframes idleBreathing {
+      0% {
+        transform: scale(0.96);
+        box-shadow: 0 0 20px rgba(197, 160, 89, 0.5), 0 0 40px rgba(197, 160, 89, 0.25);
+      }
+      100% {
+        transform: scale(1.04);
+        box-shadow: 0 0 35px rgba(197, 160, 89, 0.85), 0 0 70px rgba(197, 160, 89, 0.55);
+      }
+    }
+
+    .ai-orb.speaking {
+      animation: orbPulse 0.8s infinite alternate ease-in-out !important;
+    }
+
+    @keyframes orbPulse {
+      0% {
+        transform: scale(1.02);
+        box-shadow: 0 0 30px rgba(197, 160, 89, 0.7);
+      }
+      100% {
+        transform: scale(1.18);
+        box-shadow: 0 0 60px rgba(197, 160, 89, 1), 0 0 90px rgba(197, 160, 89, 0.65);
+      }
+    }
+
+    .welcome-text {
+      max-width: 90%;
+      margin: 0.2rem auto;
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.6;
+      color: var(--text-main);
+      min-height: 3.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .mic-control-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      flex-shrink: 0;
+    }
+
+    .mic-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(197, 160, 89, 0.15);
+      border: 1.5px solid var(--accent-gold);
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.3rem;
+      transition: all 0.3s;
+      outline: none;
+    }
+
+    .mic-btn:hover {
+      background: var(--accent-gold);
+      color: #08090b;
+    }
+
+    .mic-btn.listening {
+      background: var(--mic-red);
+      border-color: #f87171;
+      color: #fff;
+      animation: micPulse 1.2s infinite;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.7);
+    }
+
+    @keyframes micPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+
+    .mic-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* شبكة الأقسام الأربعة 2x2 لتناسب الشاشة بدون سكرول */
+    .categories-grid-main {
+      width: 100%;
+      max-width: 400px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      margin-top: 0.4rem;
+      flex-shrink: 0;
+    }
+
+    .opt-chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      padding: 0.7rem 0.5rem;
+      border-radius: 14px;
+      color: var(--text-main);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 700;
+      transition: all 0.25s;
+      text-align: center;
+      line-height: 1.3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+    }
+
+    .opt-chip:hover, .opt-chip:active {
+      border-color: var(--accent-gold);
+      background: rgba(197, 160, 89, 0.15);
+      color: #fff;
+    }
+
+    .action-confirm-box {
+      display: none;
+      width: 100%;
+      max-width: 360px;
+      flex-shrink: 0;
+      margin-top: 0.5rem;
+    }
+
+    .custom-action-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #dfc17b, var(--accent-gold));
+      color: #08090b;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 0.85rem 1.5rem;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(197, 160, 89, 0.4);
+      transition: all 0.3s;
+    }
+
+    /* صالة العرض مع إمكانية التمرير بداخلها فقط */
+    #stage-showroom {
+      flex-direction: column;
+      padding: 1.2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .showroom-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+
+    .back-btn {
+      background: transparent;
+      color: var(--accent-gold);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1.2rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .categories-bar {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.8rem;
+      margin-bottom: 1.2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .cat-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: 18px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      transition: all 0.25s;
+    }
+
+    .cat-btn.active {
+      background: var(--accent-gold);
+      color: #08090b;
+      font-weight: 700;
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 12px var(--accent-gold-glow);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .product-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s;
+    }
+
+    .product-card.highlight {
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 20px var(--accent-gold-glow);
+    }
+
+    .product-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: #14171f;
+    }
+
+    .product-info {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .product-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .product-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .product-bottom {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .product-price {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--accent-gold);
+    }
+
+    .add-btn {
+      background: rgba(197, 160, 89, 0.2);
+      border: 1px solid var(--accent-gold);
+      color: #fff;
+      padding: 0.45rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .cart-checkout-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .cart-summary {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .cart-items-list {
+      list-style: none;
+      margin: 0.8rem 0;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+
+    .cart-items-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.35rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.9rem;
+    }
+
+    .qr-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    #qr-canvas {
+      background: #fff;
+      padding: 8px;
+      border-radius: 10px;
+      width: 140px;
+      height: 140px;
+    }
+
+    .complete-order-btn {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      font-weight: 700;
+      padding: 0.65rem 1.6rem;
+      border-radius: 22px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    /* شاشة التوديع */
+    #stage-farewell {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .farewell-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 0 30px var(--accent-gold-glow);
+      border-radius: 20px;
+      padding: 2.2rem 1.5rem;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .farewell-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--accent-gold);
+      margin-bottom: 0.8rem;
+    }
+
+    .farewell-body {
+      font-size: 1.15rem;
+      line-height: 1.7;
+      color: var(--text-main);
+      margin-bottom: 1.2rem;
+    }
+
+    #radar-video, #radar-canvas {
+      display: none;
+    }
+  </style>
+</head>
+<body onclick="handleGlobalTouch()">
+
+  <header>
+    <div class="brand-title">WE BRANDS</div>
+    <div class="radar-indicator">
+      <div id="radar-status-dot" class="pulse-dot"></div>
+      <span id="radar-status-text">بانتظار الإذن...</span>
+    </div>
+  </header>
+
+  <div class="stage-container">
+    <!-- المرحلة 1: الاستقبال والمحادثة مع المستشار -->
+    <section id="stage-concierge" class="view-stage active">
+      <div class="orb-wrapper" id="orb-trigger">
+        <div class="radar-ring"></div>
+        <div class="radar-ring"></div>
+        <div class="ai-orb" id="voice-orb"></div>
+      </div>
+
+      <div class="welcome-text" id="welcome-message">
+        حيّاك الله في WE BRANDS.. اختر القسم أو تحدث بصوتك مباشرة
+      </div>
+
+      <div class="mic-control-box" id="mic-box">
+        <button class="mic-btn" id="voice-mic-btn" onclick="toggleVoiceRecognition(event)" title="تحدث بصوتك">
+          🎙️
+        </button>
+        <span class="mic-label" id="mic-status-label">انقر وتحدث بصوتك أو اختر من الأسفل</span>
+      </div>
+
+      <!-- شبكة الأقسام الأربعة 2x2 ظاهرة فوراً دون سكرول -->
+      <div class="categories-grid-main" id="categories-grid">
+        <button class="opt-chip" onclick="handleCategorySelect('riyadh', event)">سلسلة اكتشف الرياض (المصمك)</button>
+        <button class="opt-chip" onclick="handleCategorySelect('nfc_cards', event)">حلول وبطاقات NFC الذكية</button>
+        <button class="opt-chip" onclick="handleCategorySelect('hoodies', event)">الهوديات الفاخرة</button>
+        <button class="opt-chip" onclick="handleCategorySelect('streetwear', event)">تيشيرتات ستريت وير</button>
+      </div>
+
+      <div class="action-confirm-box" id="action-wrapper"></div>
+    </section>
+
+    <!-- المرحلة 2: صالة العرض -->
+    <section id="stage-showroom" class="view-stage">
+      <div class="showroom-header">
+        <div>
+          <h2 style="font-size: 1.3rem;">صالة عرض المنتجات</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">اختر قطعك وامسح الباركود للطلب الفوري بواتساب</p>
+        </div>
+        <button class="back-btn" onclick="goToStage('concierge')">الرجوع للاستقبال</button>
+      </div>
+
+      <div class="categories-bar">
+        <button class="cat-btn active" onclick="filterByTab('all', this)">الكل</button>
+        <button class="cat-btn" onclick="filterByTab('riyadh', this)">سلسلة اكتشف الرياض</button>
+        <button class="cat-btn" onclick="filterByTab('nfc_cards', this)">حلول وبطاقات NFC الذكية</button>
+        <button class="cat-btn" onclick="filterByTab('hoodies', this)">الهوديات الفاخرة</button>
+        <button class="cat-btn" onclick="filterByTab('streetwear', this)">تيشيرتات ستريت وير</button>
+      </div>
+
+      <div class="products-grid" id="products-list"></div>
+
+      <div class="cart-checkout-section">
+        <div class="cart-summary">
+          <h3>سلة مشترياتك (<span id="cart-count">0</span> قطع)</h3>
+          <ul class="cart-items-list" id="cart-items">
+            <li style="color: var(--text-muted);">السلة فارغة حالياً</li>
+          </ul>
+          <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-gold); margin-top: 0.6rem;">
+            المجموع: <span id="cart-total">0</span> ر.س
+          </div>
+        </div>
+
+        <div class="qr-container">
+          <canvas id="qr-canvas"></canvas>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">امسح الرمز لتأكيد الطلب بواتساب</span>
+          <button class="complete-order-btn" onclick="triggerFarewell(event)">✓ تم إرسال الطلب</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- المرحلة 3: شاشة التوديع -->
+    <section id="stage-farewell" class="view-stage">
+      <div class="farewell-card">
+        <div class="orb-wrapper" style="width: 120px; height: 120px; margin: 0 auto 1.2rem auto;">
+          <div class="radar-ring"></div>
+          <div class="ai-orb" id="farewell-orb" style="width: 70px; height: 70px;"></div>
+        </div>
+        <h2 class="farewell-title">سعدنا بخدمتك</h2>
+        <p class="farewell-body" id="farewell-text">
+          تتهنّى بقطعتك يا بعدي، ملبوس العافية والهناء.. شرّفتنا في WE BRANDS وننتظر شوفتك دايم!
+        </p>
+        <span style="font-size: 0.8rem; color: var(--text-muted);" id="farewell-timer">جاري الاستعداد للعميل التالي...</span>
+      </div>
+    </section>
+  </div>
+
+  <video id="radar-video" playsinline muted autoplay></video>
+  <canvas id="radar-canvas" width="64" height="48"></canvas>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+  <script>
+    const STORE_WHATSAPP_NUMBER = "966502777884";
+
+    const catalog = [
+      {
+        id: 1,
+        title: "تيشيرت قصر المصمك | اكتشف الرياض",
+        category: "riyadh",
+        price: 240,
+        image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80",
+        desc: "الإصدار التراثي: قصة بوكس فيت ثقيلة، طبعة قصر المصمك، وشريحة NFC تفاعلية مدمجة بالسدو."
+      },
+      {
+        id: 2,
+        title: "بطاقة الأعمال الرقمية الذكية (Smart NFC Card)",
+        category: "nfc_cards",
+        price: 150,
+        image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
+        desc: "بطاقة معدنية فاخرة مدمجة بشريحة NFC تشارك بياناتك وروابطك بلمسة واحدة على الجوال."
+      },
+      {
+        id: 3,
+        title: "تصريح الزوار وتجربة الفعاليات (Visitor & Event Pass)",
+        category: "nfc_cards",
+        price: 180,
+        image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=600&q=80",
+        desc: "بطاقة تفاعلية للمعارض تفتح دليلاً رقمياً وروابط ضيافة وتجارب حصرية."
+      },
+      {
+        id: 4,
+        title: "هودي WE BRANDS الفاخر (Heavyweight Hoodie)",
+        category: "hoodies",
+        price: 295,
+        image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=600&q=80",
+        desc: "خامة قطن ثقيل عالي الجودة، قصة مريحة متناسقة ولمسات ستريت وير عصرية."
+      },
+      {
+        id: 5,
+        title: "تيشيرت أوفر سايز كلاسيك (Oversized Streetwear)",
+        category: "streetwear",
+        price: 175,
+        image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600&q=80",
+        desc: "قصة واسعة كاجوال مريحة، خامة قطنية ممتازة للاستخدام اليومي بتطريز أنيق."
+      }
+    ];
+
+    let cart = [];
+    let audioUnlocked = false;
+    let cameraActive = false;
+    let qrGenerator = null;
+    let audioCtx = null;
+    let recognition = null;
+    let isListening = false;
+    let currentAudio = null;
+
+    const orb = document.getElementById('voice-orb');
+    const farewellOrb = document.getElementById('farewell-orb');
+    const welcomeMsg = document.getElementById('welcome-message');
+    const categoriesGrid = document.getElementById('categories-grid');
+    const actionWrapper = document.getElementById('action-wrapper');
+    const micBox = document.getElementById('mic-box');
+    const micBtn = document.getElementById('voice-mic-btn');
+    const micLabel = document.getElementById('mic-status-label');
+    const dot = document.getElementById('radar-status-dot');
+    const statusText = document.getElementById('radar-status-text');
+
+    function playMp3Track(filename, targetOrb) {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      }
+      currentAudio = new Audio(filename);
+      currentAudio.play().then(() => {
+        if (targetOrb) targetOrb.classList.add('speaking');
+      }).catch(err => {
+        console.warn("Playback prevented or file pending:", filename);
+      });
+      currentAudio.onended = () => {
+        if (targetOrb) targetOrb.classList.remove('speaking');
+      };
+    }
+
+    function handleGlobalTouch() {
+      if (!audioUnlocked) {
+        audioUnlocked = true;
+        try {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          audioCtx.resume();
+        } catch(e) {}
+        
+        playChime();
+        playMp3Track('welcome-mp3.mp3', orb);
+
+        if (!cameraActive) {
+          initCameraRadar();
+        }
+      }
+    }
+
+    function playChime() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.4);
+      } catch (e) {}
+    }
+
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        micBtn.style.display = 'none';
+        micLabel.innerText = "اختر باللمس من الأقسام أدناه";
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = 'ar-SA';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        isListening = true;
+        micBtn.classList.add('listening');
+        micLabel.innerText = "أستمع إليك الآن.. تفضل بالتحدث";
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.trim().toLowerCase();
+        micLabel.innerText = `سمعتك: "${transcript}"`;
+        processVoiceInput(transcript);
+      };
+
+      recognition.onerror = () => {
+        isListening = false;
+        micBtn.classList.remove('listening');
+        micLabel.innerText = "انقر وتحدث بصوتك أو اختر من الأسفل";
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        micBtn.classList.remove('listening');
+      };
+    }
+
+    function toggleVoiceRecognition(e) {
+      if (e) e.stopPropagation();
+      handleGlobalTouch();
+
+      if (!recognition) initSpeechRecognition();
+      if (!recognition) return;
+
+      if (isListening) {
+        recognition.stop();
+      } else {
+        try {
+          recognition.start();
+        } catch(err) {
+          console.warn(err);
+        }
+      }
+    }
+
+    function processVoiceInput(text) {
+      playChime();
+      if (text.includes("رياض") || text.includes("مصمك") || text.includes("سدو")) {
+        handleCategorySelect('riyadh');
+      } else if (text.includes("بطاق") || text.includes("nfc") || text.includes("حلول")) {
+        handleCategorySelect('nfc_cards');
+      } else if (text.includes("هودي") || text.includes("شتوي")) {
+        handleCategorySelect('hoodies');
+      } else {
+        handleCategorySelect('streetwear');
+      }
+    }
+
+    function handleCategorySelect(categoryKey, e) {
+      if (e) e.stopPropagation();
+      handleGlobalTouch();
+      playChime();
+
+      categoriesGrid.style.display = 'none';
+      micBox.style.display = 'none';
+
+      welcomeMsg.innerText = "اختيار رائع وذوق مميز! جهزت لك القطع المناسبة لاختيارك.. تفضل بالدخول";
+      playMp3Track('step3-ready.mp3', orb);
+
+      let btnLabel = "👉 الدخول واستعراض المعرض";
+      if (categoryKey === 'riyadh') btnLabel = "👉 الدخول لاستعراض سلسلة اكتشف الرياض";
+      if (categoryKey === 'nfc_cards') btnLabel = "👉 الدخول لاستعراض حلول وبطاقات NFC";
+      if (categoryKey === 'hoodies') btnLabel = "👉 الدخول لاستعراض الهوديات الفاخرة";
+      if (categoryKey === 'streetwear') btnLabel = "👉 الدخول لاستعراض تيشيرتات ستريت وير";
+
+      actionWrapper.innerHTML = `
+        <button class="custom-action-btn" onclick="openShowroom('${categoryKey}', event)">${btnLabel}</button>
+      `;
+      actionWrapper.style.display = 'block';
+    }
+
+    function openShowroom(filterCategory, e) {
+      if (e) e.stopPropagation();
+      goToStage('showroom');
+      applyCategoryTab(filterCategory);
+    }
+
+    function filterByTab(categoryKey, btnElement) {
+      document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+      if (btnElement) btnElement.classList.add('active');
+      renderProducts(categoryKey);
+    }
+
+    function applyCategoryTab(categoryKey) {
+      const buttons = document.querySelectorAll('.cat-btn');
+      buttons.forEach(b => {
+        b.classList.remove('active');
+        if (categoryKey === 'riyadh' && b.innerText.includes('اكتشف الرياض')) b.classList.add('active');
+        else if (categoryKey === 'nfc_cards' && b.innerText.includes('NFC')) b.classList.add('active');
+        else if (categoryKey === 'hoodies' && b.innerText.includes('الهوديات')) b.classList.add('active');
+        else if (categoryKey === 'streetwear' && b.innerText.includes('ستريت')) b.classList.add('active');
+        else if (categoryKey === 'all' && b.innerText === 'الكل') b.classList.add('active');
+      });
+      renderProducts(categoryKey);
+    }
+
+    function renderProducts(filter) {
+      const container = document.getElementById('products-list');
+      container.innerHTML = '';
+      
+      catalog.forEach(item => {
+        const isMatched = (filter === 'all' || item.category === filter);
+        const card = document.createElement('div');
+        card.className = `product-card ${isMatched ? 'highlight' : ''}`;
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.title}" class="product-img">
+          <div class="product-info">
+            <h4 class="product-title">${item.title}</h4>
+            <p class="product-desc">${item.desc}</p>
+            <div class="product-bottom">
+              <span class="product-price">${item.price} ر.س</span>
+              <button class="add-btn" onclick="addToCart(${item.id}, event)">+ إضافة للسلة</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function addToCart(id, e) {
+      if (e) e.stopPropagation();
+      const product = catalog.find(p => p.id === id);
+      if (product) {
+        cart.push(product);
+        playChime();
+        updateCartUI();
+      }
+    }
+
+    function updateCartUI() {
+      const countEl = document.getElementById('cart-count');
+      const totalEl = document.getElementById('cart-total');
+      const listEl = document.getElementById('cart-items');
+
+      countEl.innerText = cart.length;
+      const total = cart.reduce((acc, curr) => acc + curr.price, 0);
+      totalEl.innerText = total;
+
+      if (cart.length === 0) {
+        listEl.innerHTML = '<li style="color: var(--text-muted);">السلة فارغة حالياً</li>';
+      } else {
+        listEl.innerHTML = cart.map(item => `
+          <li>
+            <span>${item.title}</span>
+            <span>${item.price} ر.س</span>
+          </li>
+        `).join('');
+      }
+
+      let orderText = `مرحباً WE BRANDS، أود تأكيد طلبي عبر البائع الذكي:%0A`;
+      cart.forEach(p => {
+        orderText += `- ${p.title} (${p.price} ر.س)%0A`;
+      });
+      orderText += `الإجمالي: ${total} ر.س`;
+
+      const whatsappURL = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${orderText}`;
+
+      if (!qrGenerator) {
+        qrGenerator = new QRious({
+          element: document.getElementById('qr-canvas'),
+          size: 140,
+          value: whatsappURL
+        });
+      } else {
+        qrGenerator.value = whatsappURL;
+      }
+    }
+
+    function triggerFarewell(e) {
+      if (e) e.stopPropagation();
+      goToStage('farewell');
+      playChime();
+
+      playMp3Track('goodbye.mp3', farewellOrb);
+
+      setTimeout(() => {
+        cart = [];
+        updateCartUI();
+        goToStage('concierge');
+      }, 6500);
+    }
+
+    function goToStage(stageName) {
+      document.querySelectorAll('.view-stage').forEach(el => el.classList.remove('active'));
+      if (stageName === 'concierge') {
+        document.getElementById('stage-concierge').classList.add('active');
+        categoriesGrid.style.display = 'grid';
+        micBox.style.display = 'flex';
+        actionWrapper.style.display = 'none';
+        welcomeMsg.innerText = "حيّاك الله في WE BRANDS.. اختر القسم أو تحدث بصوتك مباشرة";
+        micLabel.innerText = "انقر وتحدث بصوتك أو اختر من الأسفل";
+      } else if (stageName === 'showroom') {
+        document.getElementById('stage-showroom').classList.add('active');
+      } else if (stageName === 'farewell') {
+        document.getElementById('stage-farewell').classList.add('active');
+      }
+    }
+
+    function initCameraRadar() {
+      const video = document.getElementById('radar-video');
+      const canvas = document.getElementById('radar-canvas');
+      const ctx = canvas.getContext('2d');
+      let prevFrame = null;
+
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 128, height: 96 } })
+        .then(stream => {
+          video.srcObject = stream;
+          cameraActive = true;
+          dot.classList.add('active');
+          statusText.innerText = "الرادار البصري يعمل (رصد الحركة نشط)";
+
+          setInterval(() => {
+            if (video.readyState < 2) return;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const currentFrame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+            if (prevFrame) {
+              let diff = 0;
+              for (let i = 0; i < currentFrame.data.length; i += 4) {
+                diff += Math.abs(currentFrame.data[i] - prevFrame.data[i]);
+              }
+              const score = diff / (canvas.width * canvas.height);
+              
+              if (score > 16) {
+                if (!audioUnlocked) {
+                  handleGlobalTouch();
+                } else if (currentAudio && currentAudio.paused) {
+                  playMp3Track('welcome-mp3.mp3', orb);
+                }
+              }
+            }
+            prevFrame = currentFrame;
+          }, 350);
+        })
+        .catch(err => {
+          dot.classList.remove('active');
+          dot.style.background = '#ef4444';
+          statusText.innerText = "تم حظر إذن الكاميرا من المتصفح";
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateCartUI();
+      initSpeechRecognition();
+      initCameraRadar();
+    });
+  </script>
+</body>
+</html>

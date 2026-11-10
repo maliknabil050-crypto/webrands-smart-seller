@@ -126,7 +126,6 @@
       50% { opacity: 0.4; }
     }
 
-    /* الشاشات الرئيسية */
     .view-stage {
       display: none;
       width: 100%;
@@ -142,7 +141,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* الشاشة 1: البائع الذكي والاستقبال (Zero Scroll) */
+    /* الشاشة 1: الاستقبال والبائع الذكي */
     #stage-concierge {
       flex: 1;
       height: calc(100vh - 65px);
@@ -326,7 +325,7 @@
       transform: translateY(-2px);
     }
 
-    /* الشاشة 2: صالة عرض المتجر الحقيقي (Store Showroom) */
+    /* الشاشة 2: صالة عرض المتجر */
     #stage-showroom {
       flex-direction: column;
       padding: 1.8rem 1.4rem 4rem 1.4rem;
@@ -376,7 +375,6 @@
       color: #08090b;
     }
 
-    /* شبكة بطاقات المتجر الاحترافية */
     .store-products-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
@@ -506,7 +504,6 @@
       <span class="mic-label" id="mic-status-label">انقر وتحدث بصوتك أو اختر من الأسفل</span>
     </div>
 
-    <!-- شبكة الأقسام الأربعة -->
     <div class="categories-grid-main">
       <button class="opt-chip" onclick="openShowroom('streetwear', event)">ستريت وير والهبات</button>
       <button class="opt-chip" onclick="openShowroom('looks', event)">تنسيقات البراند</button>
@@ -515,7 +512,7 @@
     </div>
   </section>
 
-  <!-- الشاشة 2: صالة عرض المتجر الكاملة والفاخرة -->
+  <!-- الشاشة 2: صالة عرض المتجر -->
   <section id="stage-showroom" class="view-stage">
     <div class="showroom-topbar">
       <div class="showroom-heading">
@@ -527,9 +524,7 @@
       </button>
     </div>
 
-    <div class="store-products-grid" id="store-grid">
-      <!-- يتم بناء بطاقات المنتجات كاملة هنا -->
-    </div>
+    <div class="store-products-grid" id="store-grid"></div>
   </section>
 
   <video id="radar-video" playsinline muted autoplay></video>
@@ -538,7 +533,14 @@
   <script>
     const STORE_WHATSAPP_NUMBER = "966502777884";
 
-    // منتجات حقيقية بصور ملابس رجالية وأزياء ستريت وير عالية الفخامة وبدون أي صور نسائية إطلاقاً
+    // ربط كل قسم بملفه الصوتي المستقل
+    const categoryAudios = {
+      streetwear: 'audio-streetwear.mp3',
+      looks: 'audio-looks.mp3',
+      hoodies: 'audio-hoodies.mp3',
+      basics: 'audio-basics.mp3'
+    };
+
     const storeCatalog = {
       streetwear: {
         title: "ستريت وير والهبات",
@@ -633,7 +635,12 @@
       if (e) e.stopPropagation();
       handleGlobalTouch();
       playChime();
-      playMp3Track('step3-ready.mp3', orb);
+
+      // تشغيل الرسالة الصوتية المخصصة لهذا القسم
+      const audioFile = categoryAudios[categoryKey];
+      if (audioFile) {
+        playMp3Track(audioFile, orb);
+      }
 
       const catData = storeCatalog[categoryKey];
       if (!catData) return;
@@ -795,7 +802,7 @@
 
     function processVoiceInput(text) {
       playChime();
-      if (text.includes("ستريت") || text.includes("هبات") || text.includes("هبة")) {
+      if (text.includes("ستريت") || text.includes("هبات") || text.includes("ترند")) {
         openShowroom('streetwear');
       } else if (text.includes("تنسيق") || text.includes("طقم")) {
         openShowroom('looks');

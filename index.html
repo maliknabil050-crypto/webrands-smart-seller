@@ -11,7 +11,7 @@
   <style>
     :root {
       --bg-dark: #08090b;
-      --card-bg: rgba(20, 24, 34, 0.85);
+      --card-bg: rgba(20, 24, 34, 0.95);
       --border-color: rgba(197, 160, 89, 0.25);
       --accent-gold: #c5a059;
       --accent-gold-glow: rgba(197, 160, 89, 0.45);
@@ -62,8 +62,8 @@
     }
 
     .brand-logo-img {
-      height: 44px;
-      width: 44px;
+      height: 42px;
+      width: 42px;
       object-fit: cover;
       border-radius: 50%;
       box-shadow: 0 0 14px rgba(255, 255, 255, 0.15);
@@ -124,7 +124,7 @@
       50% { opacity: 0.4; }
     }
 
-    /* الشاشة الرئيسية الوحيدة */
+    /* الشاشة الرئيسية الأساسية الخالية من أي سكرول */
     main {
       flex: 1;
       display: flex;
@@ -308,6 +308,130 @@
       color: #fff;
     }
 
+    /* النافذة المنبثقة الذكية الحديثة (Modal Popup) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .category-modal {
+      background: #11141c;
+      border: 1px solid var(--border-color);
+      border-bottom: none;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 26px 26px 0 0;
+      padding: 1.2rem 1.4rem 2rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 0.8rem;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--accent-gold);
+    }
+
+    .modal-close-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: var(--text-main);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      max-height: 52vh;
+      overflow-y: auto;
+      padding-left: 2px;
+    }
+
+    .modal-item-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .item-meta h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .item-meta p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .item-price-act {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.4rem;
+      flex-shrink: 0;
+    }
+
+    .item-price {
+      color: var(--accent-gold);
+      font-weight: 900;
+      font-size: 1rem;
+    }
+
+    .order-item-btn {
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      color: #fff;
+      border: none;
+      padding: 0.38rem 0.8rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
     #radar-video, #radar-canvas {
       display: none;
     }
@@ -329,7 +453,6 @@
     </div>
   </header>
 
-  <!-- الشاشة الرئيسية الموحدة الخالية من أي تمرير -->
   <main>
     <div class="orb-wrapper" id="orb-trigger">
       <div class="radar-ring"></div>
@@ -350,17 +473,64 @@
 
     <!-- شبكة الأقسام الأربعة المعتمدة -->
     <div class="categories-grid-main">
-      <button class="opt-chip" onclick="handleCategorySelect('ستريت وير والهبات', event)">ستريت وير والهبات</button>
-      <button class="opt-chip" onclick="handleCategorySelect('تنسيقات البراند', event)">تنسيقات البراند</button>
-      <button class="opt-chip" onclick="handleCategorySelect('الهوديات والقطع الثقيلة', event)">الهوديات والقطع الثقيلة</button>
-      <button class="opt-chip" onclick="handleCategorySelect('البيسك والقطع اليومية', event)">البيسك والقطع اليومية</button>
+      <button class="opt-chip" onclick="openCategorySheet('streetwear', event)">ستريت وير والهبات</button>
+      <button class="opt-chip" onclick="openCategorySheet('looks', event)">تنسيقات البراند</button>
+      <button class="opt-chip" onclick="openCategorySheet('hoodies', event)">الهوديات والقطع الثقيلة</button>
+      <button class="opt-chip" onclick="openCategorySheet('basics', event)">البيسك والقطع اليومية</button>
     </div>
   </main>
+
+  <!-- النافذة المنبثقة للقطع المحددة -->
+  <div class="modal-overlay" id="category-modal-overlay" onclick="closeCategorySheet(event)">
+    <div class="category-modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-category-title">القسم</h3>
+        <button class="modal-close-btn" onclick="closeCategorySheet(event)">✕</button>
+      </div>
+      <div class="modal-items-list" id="modal-items-list">
+        <!-- تملأ القطع تلقائياً بناءً على القسم المختار -->
+      </div>
+    </div>
+  </div>
 
   <video id="radar-video" playsinline muted autoplay></video>
   <canvas id="radar-canvas" width="64" height="48"></canvas>
 
   <script>
+    const STORE_WHATSAPP_NUMBER = "966502777884";
+
+    // بيانات قطع كل قسم لتظهر بالنافذة المنبثقة وبدون صور مشتتة
+    const itemsData = {
+      streetwear: {
+        title: "ستريت وير والهبات",
+        items: [
+          { name: "تيشيرت أوفر سايز جرافيك | Street Drop", desc: "قصة بوكس فيت واسعة، قطن فاخر 100% بتصميم عصري", price: 240 },
+          { name: "تيشيرت الإصدار المحدود | Limited Graphic", desc: "طبعة حصرية بجودة عالية وقطن معالج", price: 260 }
+        ]
+      },
+      looks: {
+        title: "تنسيقات البراند",
+        items: [
+          { name: "تنسيق متكامل | WE Total Outfit", desc: "هودي ثقيل وبنطال كارجو عصري متناسق", price: 490 },
+          { name: "طقم صيفي كاجوال | Street Set", desc: "تيشيرت أوفر سايز وشورت مريح بتطريز أنيق", price: 340 }
+        ]
+      },
+      hoodies: {
+        title: "الهوديات والقطع الثقيلة",
+        items: [
+          { name: "هودي WE BRANDS الثقيل (Heavyweight)", desc: "خامة قطن صوفية 450 GSM بقبعة دائرية متماسكة", price: 295 },
+          { name: "جاكيت بامبر ستريت | Street Jacket", desc: "عازل للبرودة بتفاصيل تكتيكية أنيقة", price: 380 }
+        ]
+      },
+      basics: {
+        title: "البيسك والقطع اليومية",
+        items: [
+          { name: "تيشيرت بيسك سادة أسود (Essential Boxy)", desc: "ياقة محبوكة تدوم، قصة مريحة مناسبة لجميع الأوقات", price: 160 },
+          { name: "تيشيرت بيسك أبيض خام (Raw Off-White)", desc: "قطن طبيعي ناعم جداً ومناسب للتنسيق كطبقة أساسية", price: 160 }
+        ]
+      }
+    };
+
     let audioUnlocked = false;
     let cameraActive = false;
     let radarEnabled = true;
@@ -377,6 +547,45 @@
     const radarBtn = document.getElementById('radar-btn');
     const dot = document.getElementById('radar-status-dot');
     const radarBtnText = document.getElementById('radar-btn-text');
+    const modalOverlay = document.getElementById('category-modal-overlay');
+    const modalTitle = document.getElementById('modal-category-title');
+    const modalItemsList = document.getElementById('modal-items-list');
+
+    function openCategorySheet(categoryKey, e) {
+      if (e) e.stopPropagation();
+      handleGlobalTouch();
+      playChime();
+      playMp3Track('step3-ready.mp3', orb);
+
+      const cat = itemsData[categoryKey];
+      if (!cat) return;
+
+      modalTitle.innerText = cat.title;
+      modalItemsList.innerHTML = cat.items.map(item => {
+        const msg = encodeURIComponent(`مرحباً WE BRANDS، أود طلب: ${item.name} (${item.price} ر.س)`);
+        return `
+          <div class="modal-item-card">
+            <div class="item-meta">
+              <h4>${item.name}</h4>
+              <p>${item.desc}</p>
+            </div>
+            <div class="item-price-act">
+              <span class="item-price">${item.price} ر.س</span>
+              <a href="https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${msg}" target="_blank" class="order-item-btn">
+                طلب بواتساب
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      modalOverlay.classList.add('active');
+    }
+
+    function closeCategorySheet(e) {
+      if (e) e.stopPropagation();
+      modalOverlay.classList.remove('active');
+    }
 
     function toggleRadarMode(e) {
       if (e) e.stopPropagation();
@@ -403,7 +612,7 @@
       currentAudio.play().then(() => {
         if (targetOrb) targetOrb.classList.add('speaking');
       }).catch(err => {
-        console.warn("Playback prevented or audio pending:", filename);
+        console.warn("Audio pending or blocked:", filename);
       });
       currentAudio.onended = () => {
         if (targetOrb) targetOrb.classList.remove('speaking');
@@ -502,28 +711,14 @@
     function processVoiceInput(text) {
       playChime();
       if (text.includes("ستريت") || text.includes("هبات") || text.includes("هبة")) {
-        handleCategorySelect('ستريت وير والهبات');
+        openCategorySheet('streetwear');
       } else if (text.includes("تنسيق") || text.includes("طقم")) {
-        handleCategorySelect('تنسيقات البراند');
+        openCategorySheet('looks');
       } else if (text.includes("هودي") || text.includes("ثقيل") || text.includes("شتوي")) {
-        handleCategorySelect('الهوديات والقطع الثقيلة');
+        openCategorySheet('hoodies');
       } else {
-        handleCategorySelect('البيسك والقطع اليومية');
+        openCategorySheet('basics');
       }
-    }
-
-    function handleCategorySelect(categoryName, e) {
-      if (e) e.stopPropagation();
-      handleGlobalTouch();
-      playChime();
-
-      welcomeMsg.innerText = `تم اختيار قسم [${categoryName}].. ذوقك رفيع وخيار يليق بحضورك في WE BRANDS!`;
-      playMp3Track('step3-ready.mp3', orb);
-
-      // إعادة النص الترحيبي الأصلي بعد 6 ثوانٍ تلقائياً
-      setTimeout(() => {
-        welcomeMsg.innerText = "أهلاً بك في عالم WE BRANDS.. مستقبل ملابس الستريت وير التقنية. تصفّح أحدث الدروبات، ودعنا نساعدك لاختيارٍ يليق بحضورك.";
-      }, 6000);
     }
 
     function initCameraRadar() {

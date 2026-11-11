@@ -463,7 +463,7 @@
       box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45);
     }
 
-    /* الشاشة 3: شاشة التوديع الراقية */
+    /* الشاشة 3: التوديع */
     #stage-farewell {
       flex: 1;
       height: calc(100vh - 65px);
@@ -501,12 +501,132 @@
       margin-bottom: 1.2rem;
     }
 
+    /* ========================================================
+       شاشة الخمول الإعلانية السينمائية (Attract Mode)
+       ======================================================== */
+    #stage-attract-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 999;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      cursor: pointer;
+    }
+
+    #stage-attract-screen.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .media-slider-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .slide-media {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.2s ease-in-out, transform 6s ease-out;
+      transform: scale(1.02);
+    }
+
+    .slide-media.visible {
+      opacity: 1;
+      transform: scale(1.08);
+    }
+
+    .attract-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(8,9,11,0.65) 0%, rgba(8,9,11,0.2) 40%, rgba(8,9,11,0.85) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .attract-top-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .attract-logo {
+      height: 60px;
+      width: 60px;
+      border-radius: 50%;
+      box-shadow: 0 0 25px rgba(197, 160, 89, 0.4);
+    }
+
+    .attract-brand-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .attract-center-caption {
+      max-width: 600px;
+    }
+
+    .attract-tagline {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.4;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
+      margin-bottom: 0.5rem;
+      transition: opacity 0.5s ease;
+    }
+
+    .attract-subtag {
+      font-size: 1.1rem;
+      color: var(--accent-gold);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .attract-call-action {
+      background: rgba(18, 22, 32, 0.85);
+      border: 1.5px solid var(--accent-gold);
+      color: var(--text-main);
+      padding: 0.85rem 1.8rem;
+      border-radius: 30px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 0 25px var(--accent-gold-glow);
+      animation: pulseBtn 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseBtn {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(197, 160, 89, 0.4); }
+      50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(197, 160, 89, 0.8); }
+    }
+
     #radar-video, #radar-canvas {
       display: none;
     }
   </style>
 </head>
-<body onclick="handleGlobalTouch()">
+<body onclick="handleUserInteraction()">
 
   <header>
     <div class="brand-logo-wrap" onclick="goToStage('concierge')">
@@ -579,11 +699,50 @@
     </div>
   </section>
 
+  <!-- الشاشة 4: شاشة الخمول الإعلانية السينمائية (فيديوهات + صور) -->
+  <section id="stage-attract-screen" onclick="wakeFromIdle(event)">
+    <div class="media-slider-container" id="attract-media-box">
+      <!-- 1. فيديو ترويجي تفاصيل قماش/هودي (بدون صوت ومحلي) -->
+      <video class="slide-media visible" id="attract-vid-1" playsinline muted loop autoplay>
+        <source src="ad-video-1.mp4" type="video/mp4">
+        <!-- رابط بديل في حال لم يرفع الفيديو بعد -->
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-mens-jacket-hanging-in-a-clothing-store-42217-large.mp4" type="video/mp4">
+      </video>
+
+      <!-- 2. صورة سينمائية لطقم ستريت وير كامل -->
+      <img src="ad-image-1.jpg" onerror="this.src='https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&w=1400&q=80'" class="slide-media" id="attract-img-1" alt="WE BRANDS Outfit">
+
+      <!-- 3. فيديو ترويجي إضافي لحركة التيشيرتات والأوفرسايز -->
+      <video class="slide-media" id="attract-vid-2" playsinline muted loop>
+        <source src="ad-video-2.mp4" type="video/mp4">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-young-man-wearing-a-hoodie-and-a-cap-41981-large.mp4" type="video/mp4">
+      </video>
+    </div>
+
+    <div class="attract-overlay">
+      <div class="attract-top-brand">
+        <img src="logo.png" alt="WE BRANDS" class="attract-logo">
+        <span class="attract-brand-title">WE BRANDS</span>
+      </div>
+
+      <div class="attract-center-caption">
+        <h1 class="attract-tagline" id="attract-text">أصالة الستريت وير.. بهندسة سعودية فاخرة</h1>
+        <p class="attract-subtag" id="attract-subtext">خامات ثقيلة تصل إلى 450 GSM وتصاميم تواكب الهبّة</p>
+      </div>
+
+      <div class="attract-call-action">
+        <span>المس الشاشة للتحدث مع البائع الذكي</span>
+        <span>🎙️</span>
+      </div>
+    </div>
+  </section>
+
   <video id="radar-video" playsinline muted autoplay></video>
   <canvas id="radar-canvas" width="64" height="48"></canvas>
 
   <script>
     const STORE_WHATSAPP_NUMBER = "966502777884";
+    const IDLE_TIMEOUT_SECONDS = 30; // مدة الخمول قبل الانتقال للشاشة الإعلانية (30 ثانية)
 
     const categoryAudios = {
       streetwear: 'audio-streetwear.mp3',
@@ -663,6 +822,33 @@
       }
     };
 
+    // مصفوفة محتوى شاشة الخمول (فيديو + صور + نصوص)
+    const attractSlides = [
+      {
+        type: 'video',
+        id: 'attract-vid-1',
+        title: "أصالة الستريت وير.. بهندسة سعودية فاخرة",
+        sub: "خامات ثقيلة تصل إلى 450 GSM وتصاميم تواكب الهبّة"
+      },
+      {
+        type: 'image',
+        id: 'attract-img-1',
+        title: "تنسيقات متكاملة تجمع الهيبة والراحة",
+        sub: "قصات بوكس فيت استثنائية صممت لترسم حضورك"
+      },
+      {
+        type: 'video',
+        id: 'attract-vid-2',
+        title: "مستقبل الأزياء التقنية في المملكة",
+        sub: "جودة تدوم مع كل تفصيلة وغسلة"
+      }
+    ];
+
+    let currentSlideIndex = 0;
+    let attractTimer = null;
+    let idleTimer = null;
+    let isIdle = false;
+
     let audioUnlocked = false;
     let cameraActive = false;
     let radarEnabled = true;
@@ -682,10 +868,94 @@
     const radarBtnText = document.getElementById('radar-btn-text');
     const showroomTitle = document.getElementById('showroom-title');
     const storeGrid = document.getElementById('store-grid');
+    const attractScreen = document.getElementById('stage-attract-screen');
+    const attractText = document.getElementById('attract-text');
+    const attractSubtext = document.getElementById('attract-subtext');
+
+    // تتبع النشاط وإعادة تعيين مؤقت الخمول
+    function resetIdleTimer() {
+      if (isIdle) return;
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        startAttractMode();
+      }, IDLE_TIMEOUT_SECONDS * 1000);
+    }
+
+    function handleUserInteraction() {
+      resetIdleTimer();
+      handleGlobalTouch();
+    }
+
+    // بدء شاشة الخمول الإعلانية
+    function startAttractMode() {
+      isIdle = true;
+      attractScreen.classList.add('active');
+      currentSlideIndex = 0;
+      playSlide(0);
+      clearInterval(attractTimer);
+      attractTimer = setInterval(nextAttractSlide, 6500); // تبديل كل 6.5 ثانية
+    }
+
+    // الانتقال للشريحة التالية
+    function nextAttractSlide() {
+      currentSlideIndex = (currentSlideIndex + 1) % attractSlides.length;
+      playSlide(currentSlideIndex);
+    }
+
+    function playSlide(index) {
+      const allMedia = document.querySelectorAll('.slide-media');
+      allMedia.forEach(el => {
+        el.classList.remove('visible');
+        if (el.tagName === 'VIDEO') {
+          el.pause();
+        }
+      });
+
+      const current = attractSlides[index];
+      const targetEl = document.getElementById(current.id);
+      if (targetEl) {
+        targetEl.classList.add('visible');
+        if (targetEl.tagName === 'VIDEO') {
+          targetEl.currentTime = 0;
+          targetEl.play().catch(() => {});
+        }
+      }
+
+      // تغيير النص بتأثير ناعم
+      attractText.style.opacity = 0;
+      setTimeout(() => {
+        attractText.innerText = current.title;
+        attractSubtext.innerText = current.sub;
+        attractText.style.opacity = 1;
+      }, 400);
+    }
+
+    // الاستيقاظ من الخمول عند لمس الشاشة الإعلانية أو تحسس الرادار
+    function wakeFromIdle(e) {
+      if (e) e.stopPropagation();
+      isIdle = false;
+      clearInterval(attractTimer);
+      attractScreen.classList.remove('active');
+
+      const allMedia = document.querySelectorAll('.slide-media');
+      allMedia.forEach(el => {
+        if (el.tagName === 'VIDEO') el.pause();
+      });
+
+      playChime();
+      goToStage('concierge');
+      resetIdleTimer();
+
+      // ترحيب صوتي عند الاستيقاظ
+      if (Date.now() - lastWelcomeTime > 20000) {
+        lastWelcomeTime = Date.now();
+        playMp3Track('welcome-mp3.mp3', orb);
+      }
+    }
 
     function openShowroom(categoryKey, e) {
       if (e) e.stopPropagation();
-      handleGlobalTouch();
+      handleUserInteraction();
       playChime();
 
       const audioFile = categoryAudios[categoryKey];
@@ -720,24 +990,21 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // معالجة الطلب وتشغيل شاشة وصوت التوديع قبل الانتقال للواتساب
     function handleProductOrder(productName, price, e) {
       if (e) e.stopPropagation();
+      handleUserInteraction();
       playChime();
       goToStage('farewell');
 
-      // تشغيل رسالة الوداع
       playMp3Track('goodbye.mp3', farewellOrb);
 
       const msg = encodeURIComponent(`مرحباً WE BRANDS، أود طلب: ${productName} - السعر: ${price} ر.س`);
       const whatsappURL = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${msg}`;
 
-      // فتح محادثة الواتساب بعد 1.5 ثانية لضمان بدء الصوت والشاشة
       setTimeout(() => {
         window.open(whatsappURL, '_blank');
       }, 1500);
 
-      // إعادة التوجيه التلقائي للاستقبال بعد انتهاء التوديع
       setTimeout(() => {
         goToStage('concierge');
       }, 6500);
@@ -860,7 +1127,7 @@
 
     function toggleVoiceRecognition(e) {
       if (e) e.stopPropagation();
-      handleGlobalTouch();
+      handleUserInteraction();
 
       if (!recognition) initSpeechRecognition();
       if (!recognition) return;
@@ -912,12 +1179,18 @@
               }
               const score = diff / (canvas.width * canvas.height);
               
-              if (score > 18 && (Date.now() - lastWelcomeTime > 45000)) {
-                lastWelcomeTime = Date.now();
-                if (!audioUnlocked) {
-                  handleGlobalTouch();
-                } else if (!currentAudio || currentAudio.paused) {
-                  playMp3Track('welcome-mp3.mp3', orb);
+              // تحسس حركة شخص مقترب
+              if (score > 18) {
+                resetIdleTimer();
+                if (isIdle) {
+                  wakeFromIdle();
+                } else if (score > 22 && (Date.now() - lastWelcomeTime > 45000)) {
+                  lastWelcomeTime = Date.now();
+                  if (!audioUnlocked) {
+                    handleGlobalTouch();
+                  } else if (!currentAudio || currentAudio.paused) {
+                    playMp3Track('welcome-mp3.mp3', orb);
+                  }
                 }
               }
             }
@@ -934,6 +1207,11 @@
     window.addEventListener('DOMContentLoaded', () => {
       initSpeechRecognition();
       initCameraRadar();
+      resetIdleTimer();
+    });
+
+    ['mousemove', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+      window.addEventListener(evt, resetIdleTimer, { passive: true });
     });
   </script>
 </body>

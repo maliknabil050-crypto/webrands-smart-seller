@@ -502,7 +502,7 @@
     }
 
     /* ========================================================
-       شاشة الخمول الإعلانية السينمائية (Attract Mode)
+       شاشة الخمول الإعلانية السينمائية (فيديو + صور)
        ======================================================== */
     #stage-attract-screen {
       position: fixed;
@@ -526,28 +526,42 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
+      background: #000;
     }
 
-    .slide-media {
+    /* عنصر الفيديو الحقيقي الدائم */
+    #attract-video-player {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      transition: opacity 1.2s ease-in-out, transform 6s ease-out;
+      transition: opacity 1s ease-in-out;
       transform: scale(1.02);
     }
 
-    .slide-media.visible {
-      opacity: 1;
-      transform: scale(1.08);
+    /* عنصر الصورة البديل */
+    #attract-image-player {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1s ease-in-out, transform 6s ease-out;
+      transform: scale(1.02);
+    }
+
+    .media-active {
+      opacity: 1 !important;
+      transform: scale(1.06) !important;
     }
 
     .attract-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(8,9,11,0.65) 0%, rgba(8,9,11,0.2) 40%, rgba(8,9,11,0.85) 100%);
+      background: linear-gradient(180deg, rgba(8,9,11,0.65) 0%, rgba(8,9,11,0.15) 40%, rgba(8,9,11,0.85) 100%);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -699,24 +713,18 @@
     </div>
   </section>
 
-  <!-- الشاشة 4: شاشة الخمول الإعلانية السينمائية (فيديوهات + صور) -->
+  <!-- الشاشة 4: شاشة الخمول (فيديو وصور فعلية بالتناوب) -->
   <section id="stage-attract-screen" onclick="wakeFromIdle(event)">
-    <div class="media-slider-container" id="attract-media-box">
-      <!-- 1. فيديو ترويجي تفاصيل قماش/هودي (بدون صوت ومحلي) -->
-      <video class="slide-media visible" id="attract-vid-1" playsinline muted loop autoplay>
+    <div class="media-slider-container">
+      <!-- مشغل الفيديو الحقيقي -->
+      <video id="attract-video-player" playsinline muted loop autoplay preload="auto">
         <source src="ad-video-1.mp4" type="video/mp4">
-        <!-- رابط بديل في حال لم يرفع الفيديو بعد -->
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-mens-jacket-hanging-in-a-clothing-store-42217-large.mp4" type="video/mp4">
+        <!-- فيديو احتياطي مضمون للعمل التلقائي -->
+        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
       </video>
 
-      <!-- 2. صورة سينمائية لطقم ستريت وير كامل -->
-      <img src="ad-image-1.jpg" onerror="this.src='https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&w=1400&q=80'" class="slide-media" id="attract-img-1" alt="WE BRANDS Outfit">
-
-      <!-- 3. فيديو ترويجي إضافي لحركة التيشيرتات والأوفرسايز -->
-      <video class="slide-media" id="attract-vid-2" playsinline muted loop>
-        <source src="ad-video-2.mp4" type="video/mp4">
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-young-man-wearing-a-hoodie-and-a-cap-41981-large.mp4" type="video/mp4">
-      </video>
+      <!-- مشغل الصور السينمائي -->
+      <img id="attract-image-player" src="ad-image-1.jpg" onerror="this.src='https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&w=1400&q=80'" alt="WE BRANDS">
     </div>
 
     <div class="attract-overlay">
@@ -727,7 +735,7 @@
 
       <div class="attract-center-caption">
         <h1 class="attract-tagline" id="attract-text">أصالة الستريت وير.. بهندسة سعودية فاخرة</h1>
-        <p class="attract-subtag" id="attract-subtext">خامات ثقيلة تصل إلى 450 GSM وتصاميم تواكب الهبّة</p>
+        <p class="attract-subtag" id="attract-subtext">خامات ثقيلة تصل إلى 450 GSM وتصاميم تواكب الترند</p>
       </div>
 
       <div class="attract-call-action">
@@ -742,7 +750,7 @@
 
   <script>
     const STORE_WHATSAPP_NUMBER = "966502777884";
-    const IDLE_TIMEOUT_SECONDS = 30; // مدة الخمول قبل الانتقال للشاشة الإعلانية (30 ثانية)
+    const IDLE_TIMEOUT_SECONDS = 30; // الانتقال للخمول بعد 30 ثانية دون لمس
 
     const categoryAudios = {
       streetwear: 'audio-streetwear.mp3',
@@ -822,30 +830,24 @@
       }
     };
 
-    // مصفوفة محتوى شاشة الخمول (فيديو + صور + نصوص)
-    const attractSlides = [
+    // مصفوفة تبادل الفيديو والصور مع نصوص تسويقية
+    const attractMediaSequence = [
       {
         type: 'video',
-        id: 'attract-vid-1',
         title: "أصالة الستريت وير.. بهندسة سعودية فاخرة",
-        sub: "خامات ثقيلة تصل إلى 450 GSM وتصاميم تواكب الهبّة"
+        sub: "خامات ثقيلة تصل إلى 450 GSM وتصاميم تواكب الترند",
+        duration: 8000 // 8 ثوان للفيديو
       },
       {
         type: 'image',
-        id: 'attract-img-1',
         title: "تنسيقات متكاملة تجمع الهيبة والراحة",
-        sub: "قصات بوكس فيت استثنائية صممت لترسم حضورك"
-      },
-      {
-        type: 'video',
-        id: 'attract-vid-2',
-        title: "مستقبل الأزياء التقنية في المملكة",
-        sub: "جودة تدوم مع كل تفصيلة وغسلة"
+        sub: "قصات بوكس فيت استثنائية صممت لترسم حضورك",
+        duration: 5000 // 5 ثوان للصورة
       }
     ];
 
-    let currentSlideIndex = 0;
-    let attractTimer = null;
+    let currentMediaIndex = 0;
+    let sequenceTimer = null;
     let idleTimer = null;
     let isIdle = false;
 
@@ -868,11 +870,13 @@
     const radarBtnText = document.getElementById('radar-btn-text');
     const showroomTitle = document.getElementById('showroom-title');
     const storeGrid = document.getElementById('store-grid');
+
     const attractScreen = document.getElementById('stage-attract-screen');
+    const attractVideo = document.getElementById('attract-video-player');
+    const attractImage = document.getElementById('attract-image-player');
     const attractText = document.getElementById('attract-text');
     const attractSubtext = document.getElementById('attract-subtext');
 
-    // تتبع النشاط وإعادة تعيين مؤقت الخمول
     function resetIdleTimer() {
       if (isIdle) return;
       clearTimeout(idleTimer);
@@ -886,67 +890,59 @@
       handleGlobalTouch();
     }
 
-    // بدء شاشة الخمول الإعلانية
     function startAttractMode() {
       isIdle = true;
       attractScreen.classList.add('active');
-      currentSlideIndex = 0;
-      playSlide(0);
-      clearInterval(attractTimer);
-      attractTimer = setInterval(nextAttractSlide, 6500); // تبديل كل 6.5 ثانية
+      currentMediaIndex = 0;
+      runMediaSequence();
     }
 
-    // الانتقال للشريحة التالية
-    function nextAttractSlide() {
-      currentSlideIndex = (currentSlideIndex + 1) % attractSlides.length;
-      playSlide(currentSlideIndex);
-    }
+    function runMediaSequence() {
+      if (!isIdle) return;
 
-    function playSlide(index) {
-      const allMedia = document.querySelectorAll('.slide-media');
-      allMedia.forEach(el => {
-        el.classList.remove('visible');
-        if (el.tagName === 'VIDEO') {
-          el.pause();
-        }
-      });
+      const item = attractMediaSequence[currentMediaIndex];
 
-      const current = attractSlides[index];
-      const targetEl = document.getElementById(current.id);
-      if (targetEl) {
-        targetEl.classList.add('visible');
-        if (targetEl.tagName === 'VIDEO') {
-          targetEl.currentTime = 0;
-          targetEl.play().catch(() => {});
-        }
+      // تبديل الظهور بين الفيديو والصورة
+      if (item.type === 'video') {
+        attractImage.classList.remove('media-active');
+        attractVideo.classList.add('media-active');
+        attractVideo.currentTime = 0;
+        attractVideo.play().catch(() => {});
+      } else {
+        attractVideo.classList.remove('media-active');
+        attractImage.classList.add('media-active');
+        attractVideo.pause();
       }
 
-      // تغيير النص بتأثير ناعم
+      // تحديث النصوص بسلاسة
       attractText.style.opacity = 0;
       setTimeout(() => {
-        attractText.innerText = current.title;
-        attractSubtext.innerText = current.sub;
+        attractText.innerText = item.title;
+        attractSubtext.innerText = item.sub;
         attractText.style.opacity = 1;
-      }, 400);
+      }, 350);
+
+      clearTimeout(sequenceTimer);
+      sequenceTimer = setTimeout(() => {
+        currentMediaIndex = (currentMediaIndex + 1) % attractMediaSequence.length;
+        runMediaSequence();
+      }, item.duration);
     }
 
-    // الاستيقاظ من الخمول عند لمس الشاشة الإعلانية أو تحسس الرادار
     function wakeFromIdle(e) {
       if (e) e.stopPropagation();
       isIdle = false;
-      clearInterval(attractTimer);
+      clearTimeout(sequenceTimer);
       attractScreen.classList.remove('active');
 
-      const allMedia = document.querySelectorAll('.slide-media');
-      allMedia.forEach(el => {
-        if (el.tagName === 'VIDEO') el.pause();
-      });
+      attractVideo.pause();
+      attractVideo.classList.remove('media-active');
+      attractImage.classList.remove('media-active');
 
       playChime();
       goToStage('concierge');
       resetIdleTimer();
 
-      // ترحيب صوتي عند الاستيقاظ
       if (Date.now() - lastWelcomeTime > 20000) {
         lastWelcomeTime = Date.now();
         playMp3Track('welcome-mp3.mp3', orb);
@@ -1179,7 +1175,6 @@
               }
               const score = diff / (canvas.width * canvas.height);
               
-              // تحسس حركة شخص مقترب
               if (score > 18) {
                 resetIdleTimer();
                 if (isIdle) {

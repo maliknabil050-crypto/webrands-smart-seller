@@ -451,7 +451,6 @@
       font-size: 0.85rem;
       font-weight: 700;
       cursor: pointer;
-      text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
@@ -462,6 +461,44 @@
     .order-whatsapp-btn:hover {
       transform: scale(1.03);
       box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45);
+    }
+
+    /* الشاشة 3: شاشة التوديع الراقية */
+    #stage-farewell {
+      flex: 1;
+      height: calc(100vh - 65px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .farewell-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 0 35px var(--accent-gold-glow);
+      border-radius: 22px;
+      padding: 2.5rem 1.8rem;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .farewell-title {
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: var(--accent-gold);
+      margin-bottom: 0.9rem;
+    }
+
+    .farewell-body {
+      font-size: 1.15rem;
+      line-height: 1.7;
+      color: var(--text-main);
+      margin-bottom: 1.2rem;
     }
 
     #radar-video, #radar-canvas {
@@ -527,13 +564,27 @@
     <div class="store-products-grid" id="store-grid"></div>
   </section>
 
+  <!-- الشاشة 3: التوديع -->
+  <section id="stage-farewell" class="view-stage">
+    <div class="farewell-card">
+      <div class="orb-wrapper" style="width: 130px; height: 130px; margin: 0 auto 1.2rem auto;">
+        <div class="radar-ring"></div>
+        <div class="ai-orb" id="farewell-orb" style="width: 75px; height: 75px;"></div>
+      </div>
+      <h2 class="farewell-title">سعدنا بخدمتك</h2>
+      <p class="farewell-body">
+        تتهنّى بقطعتك يا بعدي، ملبوس العافية والهناء.. شرّفتنا في WE BRANDS وننتظر شوفتك دايم!
+      </p>
+      <span style="font-size: 0.8rem; color: var(--text-muted);">جاري تحويلك إلى واتساب لإنهاء الطلب...</span>
+    </div>
+  </section>
+
   <video id="radar-video" playsinline muted autoplay></video>
   <canvas id="radar-canvas" width="64" height="48"></canvas>
 
   <script>
     const STORE_WHATSAPP_NUMBER = "966502777884";
 
-    // ربط كل قسم بملفه الصوتي المستقل
     const categoryAudios = {
       streetwear: 'audio-streetwear.mp3',
       looks: 'audio-looks.mp3',
@@ -622,6 +673,7 @@
     let lastWelcomeTime = 0;
 
     const orb = document.getElementById('voice-orb');
+    const farewellOrb = document.getElementById('farewell-orb');
     const welcomeMsg = document.getElementById('welcome-message');
     const micBtn = document.getElementById('voice-mic-btn');
     const micLabel = document.getElementById('mic-status-label');
@@ -636,7 +688,6 @@
       handleGlobalTouch();
       playChime();
 
-      // تشغيل الرسالة الصوتية المخصصة لهذا القسم
       const audioFile = categoryAudios[categoryKey];
       if (audioFile) {
         playMp3Track(audioFile, orb);
@@ -647,7 +698,7 @@
 
       showroomTitle.innerText = catData.title;
       storeGrid.innerHTML = catData.products.map(p => {
-        const msg = encodeURIComponent(`مرحباً WE BRANDS، أود طلب: ${p.name} - السعر: ${p.price} ر.س`);
+        const cleanName = p.name.replace(/'/g, "\\'");
         return `
           <div class="store-card">
             <img src="${p.image}" alt="${p.name}" class="store-card-img">
@@ -656,9 +707,9 @@
               <p class="store-card-desc">${p.desc}</p>
               <div class="store-card-footer">
                 <span class="store-card-price">${p.price} ر.س</span>
-                <a href="https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${msg}" target="_blank" class="order-whatsapp-btn">
+                <button onclick="handleProductOrder('${cleanName}', ${p.price}, event)" class="order-whatsapp-btn">
                   طلب عبر واتساب 💬
-                </a>
+                </button>
               </div>
             </div>
           </div>
@@ -669,6 +720,29 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // معالجة الطلب وتشغيل شاشة وصوت التوديع قبل الانتقال للواتساب
+    function handleProductOrder(productName, price, e) {
+      if (e) e.stopPropagation();
+      playChime();
+      goToStage('farewell');
+
+      // تشغيل رسالة الوداع
+      playMp3Track('goodbye.mp3', farewellOrb);
+
+      const msg = encodeURIComponent(`مرحباً WE BRANDS، أود طلب: ${productName} - السعر: ${price} ر.س`);
+      const whatsappURL = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${msg}`;
+
+      // فتح محادثة الواتساب بعد 1.5 ثانية لضمان بدء الصوت والشاشة
+      setTimeout(() => {
+        window.open(whatsappURL, '_blank');
+      }, 1500);
+
+      // إعادة التوجيه التلقائي للاستقبال بعد انتهاء التوديع
+      setTimeout(() => {
+        goToStage('concierge');
+      }, 6500);
+    }
+
     function goToStage(stageId) {
       document.querySelectorAll('.view-stage').forEach(s => s.classList.remove('active'));
       if (stageId === 'concierge') {
@@ -676,6 +750,8 @@
         welcomeMsg.innerText = "أهلاً بك في عالم WE BRANDS.. مستقبل ملابس الستريت وير التقنية. تصفّح أحدث الدروبات، ودعنا نساعدك لاختيارٍ يليق بحضورك.";
       } else if (stageId === 'showroom') {
         document.getElementById('stage-showroom').classList.add('active');
+      } else if (stageId === 'farewell') {
+        document.getElementById('stage-farewell').classList.add('active');
       }
     }
 
